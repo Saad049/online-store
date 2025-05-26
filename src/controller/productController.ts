@@ -167,6 +167,7 @@ export const updateProductById = async (req: Request, res: Response) => {
           discountedPrice: `$${updatedProduct.discountedPrice}`,
           image: updatedProduct.image,
           is_featured: updatedProduct.is_featured,
+          
         },
       });
     } catch (error) {

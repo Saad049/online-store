@@ -8,7 +8,7 @@ import { Payment } from '../entities/payment';
 import { sendOrderConfirmationEmail } from '../utils/mailer';
 
 export const placeOrder = async (req: Request, res: Response) => {
-  const { userId, paymentMethod='COD',cardHolderName,deliveryAddress,cardNumber, expiryDate, cvv } = req.body;
+  const { userId, paymentMethod,cardHolderName,deliveryAddress,cardNumber, expiryDate, cvv } = req.body;
 
   try {
     const user = await AppDataSource.getRepository(User).findOneBy({ id: userId });
@@ -36,6 +36,11 @@ export const placeOrder = async (req: Request, res: Response) => {
 
     const tax = total * taxRate;
     const totalPrice = total + tax + deliveryFee + serviceFee;
+    const estimatedDeliveryDate = new Date();
+estimatedDeliveryDate.setDate(estimatedDeliveryDate.getDate() + 3);
+
+
+const trackingNumber = `TRK-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
     const orderRepo = AppDataSource.getRepository(Order);
 
@@ -48,8 +53,8 @@ export const placeOrder = async (req: Request, res: Response) => {
       totalPrice,
       cart,
       paymentMethod,
-      trackingNumber:'Null',
-      estimatedDeliveryDate:'Null',
+      trackingNumber,
+      estimatedDeliveryDate,
       deliveryAddress,
       status: 'pending',
     });
@@ -70,36 +75,51 @@ export const placeOrder = async (req: Request, res: Response) => {
     );
 
     await orderItemRepo.save(orderItems);
+const paymentRepo = AppDataSource.getRepository(Payment);
 
-    if (paymentMethod === 'card') {
-      if (!cardHolderName || !cardNumber || !expiryDate || !cvv) {
-        return res.status(400).json({ message: 'Card details are required for card payments' });
-      }
+let payment: Payment;
 
-         for (const item of cart.items) {
-      if (item.product.quantity < item.quantity) {
-        return res.status(400).json({
-          message: `Insufficient stock for product: ${item.product.name}. Available: ${item.product.quantity}, Requested: ${item.quantity}`,
-        });
-      }
-    }
+if (paymentMethod === 'card') {
+  if (!cardHolderName || !cardNumber || !expiryDate || !cvv) {
+    return res.status(400).json({ message: 'Card details are required for card payments' });
+  }
 
-      const paymentRepo = AppDataSource.getRepository(Payment);
-
-      const payment = paymentRepo.create({
-        order: newOrder,
-        cardHolderName,
-        cardNumber,
-        expiryDate,
-        cvv,
-        status: 'success',
+  for (const item of cart.items) {
+    if (item.product.quantity < item.quantity) {
+      return res.status(400).json({
+        message: `Insufficient stock for product: ${item.product.name}. Available: ${item.product.quantity}, Requested: ${item.quantity}`,
       });
-
-      await paymentRepo.save(payment);
-
-      newOrder.payment = payment;
-      await orderRepo.save(newOrder);
     }
+  }
+
+  payment = paymentRepo.create({
+    order: newOrder,
+    paymentMethod: 'CARD', // ✅ Make sure this enum exists in your Payment entity
+    cardHolderName,
+    cardNumber,
+    expiryDate,
+    cvv,
+    status: 'success',
+  });
+
+} else {
+  payment = paymentRepo.create({
+    order: newOrder,
+    paymentMethod: 'COD',
+    cardHolderName: '',
+    cardNumber: '',
+    expiryDate: '',
+    cvv: '',
+    status: 'success',
+  });
+}
+
+await paymentRepo.save(payment);
+
+
+newOrder.payment = payment;
+await orderRepo.save(newOrder);
+
       
     await AppDataSource.getRepository(Cart).save(cart);
  
@@ -108,7 +128,7 @@ export const placeOrder = async (req: Request, res: Response) => {
 
     const placedOrder = await orderRepo.findOne({
       where: { id: newOrder.id },
-      relations: ['items', 'items.product', 'payment', 'user', 'cart'],
+      relations: ['items.product', 'payment', 'user', 'cart'],
     });
     if (!placedOrder) {
   return res.status(404).json({ message: 'Order not found after creation' });

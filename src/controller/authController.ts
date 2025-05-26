@@ -44,11 +44,15 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
       return res.status(400).json({ error: parsedData.error.flatten() });
     }
 
-    const { email, password} = parsedData.data;
-    const user = await userRepository.findOne({ where: { email },  });
+    const { email, password } = parsedData.data;
+    console.log("Login Body Password:", password);
+
+    const user = await userRepository.findOne({ where: { email } });
     if (!user) {
       return res.status(400).json({ message: "Invalid email" });
     }
+
+    console.log("User Password in DB:", user.password);
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
@@ -56,22 +60,17 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     }
 
     const JWT_SECRET = process.env.JWT_SECRET as string;
-    const accessToken = jwt.sign(
-      { userId: user.id,  }, 
-      JWT_SECRET, 
-      { expiresIn: "1h" }
-    );
-    
-    
-    console.log('Access Token:', accessToken);
-
+    const accessToken = jwt.sign({ userId: user.id }, JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
     return res.status(200).json({ message: "Login successful", accessToken });
   } catch (error) {
-    console.error(error);
+    console.error("Login Error:", error);
     return res.status(500).json({ message: "Server error during login" });
   }
 };
+
 
 
 

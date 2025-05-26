@@ -7,7 +7,7 @@ export class CartItem {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => Product, (product) => product.cartItems)
+  @ManyToOne(() => Product, (product) => product.cartItems,{ onDelete: 'CASCADE' })
   product!: Product;
 
   @ManyToOne(() => Cart, (cart) => cart.items)

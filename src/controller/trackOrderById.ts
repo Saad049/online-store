@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../config/db';
 import { Order } from '../entities/order';
-
-import { sendOrderCancelledEmail, sendOrderDeliveredEmail, sendOrderShippedEmail } from '../utils/mailer';
+import { Payment } from '../entities';
 
 export const trackOrderById = async (req: Request, res: Response) => {
   const { orderId } = req.params;
@@ -16,7 +15,7 @@ export const trackOrderById = async (req: Request, res: Response) => {
     const orderRepo = AppDataSource.getRepository(Order);
     const order = await orderRepo.findOne({
       where: { id: orderIdNum },
-      relations: ['items', 'items.product', 'payment', 'user',],
+      relations: ['items', 'items.product','user',],
     });
 
     if (!order) {
@@ -38,7 +37,7 @@ export const trackOrderByTrackingNumber = async (req: Request, res: Response) =>
 
     const order = await orderRepo.findOne({
       where: { trackingNumber },
-      relations: ['user', 'items', 'items.product'],
+      relations: ['user', 'items', 'items.product', 'payment'],
     });
      if (!order) {
       return res.status(404).json({ message: 'Order not found' });
@@ -48,14 +47,16 @@ export const trackOrderByTrackingNumber = async (req: Request, res: Response) =>
       message: 'Order found',
       order: {
         id: order.id,
-        customerName: order.user.name,
+        name: order.user.name,
         status: order.status,
         deliveryAddress: order.deliveryAddress,
         trackingNumber: order.trackingNumber,
+        payment:order.payment,
          estimatedDeliveryDate: order.estimatedDeliveryDate,
         items: order.items.map(item => ({
           productName: item.product.name,
           quantity: item.quantity,
+          
         })),
       },
     });

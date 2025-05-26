@@ -44,16 +44,16 @@ export class Order {
 
   @CreateDateColumn()
   created_at!: Date;
-  @Column({ nullable: true })
-estimatedDeliveryDate?: Date;
+  @Column({ nullable: false })
+estimatedDeliveryDate!: Date;
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
   items!: OrderItem[];
   @OneToOne(() => Payment, (payment) => payment.order, { cascade: true })
     @JoinColumn() 
 payment!: Payment;
-@Column({ type: 'varchar', nullable: true })
-trackingNumber?: string;
+@Column({ type: 'varchar', nullable: false })
+trackingNumber!: string;
 
 
 }

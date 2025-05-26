@@ -1,6 +1,7 @@
 // entities/Product.ts
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { CartItem } from './CartItems';
+import { Review } from './review';
 
 @Entity()
 export class Product {
@@ -30,8 +31,11 @@ export class Product {
    @Column({ type: 'int', default: 1 })
 quantity!: number;
 
-  @OneToMany(() => CartItem, (cartItem) => cartItem.product)
+  @OneToMany(() => CartItem, (cartItem) => cartItem.product,{ cascade: true })
 cartItems!: CartItem[];
+@OneToMany(() =>Review,(review) => review.product)
+review!:Review[];
+
 
   
 

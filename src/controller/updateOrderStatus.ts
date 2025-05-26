@@ -1,6 +1,5 @@
 
 import { Request,Response } from "express";
-import { AppDataSource } from "../config/db";
 import { sendOrderCancelledEmail, sendOrderDeliveredEmail, sendOrderShippedEmail } from "../utils/mailer";
 import { orderRepo } from "../repositories";
 
