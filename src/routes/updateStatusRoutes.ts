@@ -1,6 +1,7 @@
 
 import { Router } from 'express';
 import { updateOrderStatus } from '../controller/updateOrderStatus';
+import { authenticate } from '../middleware/authentic';
 
 const router = Router();
 /**
@@ -8,7 +9,9 @@ const router = Router();
  * /updateStatus/{id}/status:
  *   patch:
  *     summary: Update the status of an order (and send email accordingly)
- *     tags: [Orders]
+ *     tags: [update Orders by status]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -57,6 +60,6 @@ const router = Router();
  *         description: Internal server error
  */
 
-router.patch('/:id/status', updateOrderStatus);
+router.patch('/:id/status',authenticate,updateOrderStatus);
 
 export default router;

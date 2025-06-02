@@ -17,13 +17,11 @@ export const addToCart = async (req: Request, res: Response) => {
     const user = await userRepo.findOneBy({ id: userId });
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-   
     let cart = await cartRepo.findOne({
       where: { user: { id: userId }, status: 'active' },
       relations: ['items', 'items.product'],
     });
 
-   
     if (!cart) {
       cart = cartRepo.create({ user, status: 'active' });
       cart = await cartRepo.save(cart);
@@ -36,6 +34,12 @@ export const addToCart = async (req: Request, res: Response) => {
 
     if (cartItem) {
       if (action === 'increment') {
+        if (cartItem.quantity + 1 > product.quantity) {
+          return res.status(400).json({
+            message: `Only ${product.quantity} units available for ${product.name}`,
+          });
+        }
+
         cartItem.quantity += 1;
       } else if (action === 'decrement') {
         cartItem.quantity -= 1;
@@ -49,6 +53,12 @@ export const addToCart = async (req: Request, res: Response) => {
       }
     } else {
       if (action === 'increment') {
+        if (product.quantity < 1) {
+          return res.status(400).json({
+            message: `No stock available for ${product.name}`,
+          });
+        }
+
         cartItem = cartItemRepo.create({
           cart,
           product,
@@ -76,6 +86,7 @@ export const addToCart = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Server error', error });
   }
 };
+
 
 
 export const getUserCart = async (req: Request, res: Response) => {

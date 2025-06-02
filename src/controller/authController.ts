@@ -2,11 +2,13 @@ import { Request, Response } from "express";
 import { loginSchema, signupSchema } from "../validation/shemaValidation";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { userRepository } from "../repositories";
+import { roleRepo, userRepository } from "../repositories";
+import { In } from "typeorm";
+import { Role } from "../entities/Role";
 
 export const signup = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { email,name,password,confirmPassword} = req.body;
+    const { email,name,password,confirmPassword,roleIds} = req.body;
     const parsedData = signupSchema.safeParse(req.body);
     if (!parsedData.success) {
       return res.status(400).json({ error: parsedData.error.flatten() });
@@ -22,6 +24,16 @@ export const signup = async (req: Request, res: Response): Promise<Response> => 
       return res.status(400).json({ message: "User already exists" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
+      const roles = await roleRepo.find({
+      where: { id: In(roleIds) },
+      relations: ["permissions"], 
+
+    }
+  );
+     if (roles.length !== roleIds.length) {
+      return res.status(404).json({ message: "One or more roles not found" });
+    }
+    console.log("Roles Assigned:", roleIds);
  
     const user = userRepository.create({name,email, password: hashedPassword},);
   
@@ -47,7 +59,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     const { email, password } = parsedData.data;
     console.log("Login Body Password:", password);
 
-    const user = await userRepository.findOne({ where: { email } });
+      const user = await userRepository.findOne({ where: { email }, relations: ["roles"] });
     if (!user) {
       return res.status(400).json({ message: "Invalid email" });
     }
@@ -60,7 +72,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     }
 
     const JWT_SECRET = process.env.JWT_SECRET as string;
-    const accessToken = jwt.sign({ userId: user.id }, JWT_SECRET, {
+    const accessToken = jwt.sign({ userId: user.id,roles: user.roles.map((role: Role) => role.name), }, JWT_SECRET, {
       expiresIn: "1h",
     });
 

@@ -9,6 +9,12 @@ import trackOrderRoutes from "./trackOrderRoutes";
 import updateStatusRoutes from "./updateStatusRoutes";
 import reviewRoutes from "./reviewRoutes";
 
+import permissionRoutes from "./permissionRoutes";
+import roleRoutes from "./roleRoutes";
+import { assignRoleToUser } from "../controller/assginRoleToUser";
+import assginRoleToUserRoutes from "./assginRoleToUserRoutes";
+
+
 
 const registerRoutes = (app:Express)=>{
     app.use("/auth", authRoutes);
@@ -20,6 +26,9 @@ const registerRoutes = (app:Express)=>{
     app.use('/trackOrder',trackOrderRoutes);
     app.use('/updateStatus',updateStatusRoutes)
     app.use('/createReview',reviewRoutes)
+    app.use("/permissions", permissionRoutes);  // Permissions Routes
+    app.use("/roles", roleRoutes); 
+    app.use("/assignRoles",assginRoleToUserRoutes)
 
     
 };

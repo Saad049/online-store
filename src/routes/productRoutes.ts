@@ -4,6 +4,7 @@ import { Router } from 'express';
 import { upload } from '../middleware/uploads';
 import { createProductItems, deleteProductById, getAllProducts, getProductById, updateProductById } from '../controller/productController';
 import { authenticate } from '../middleware/authentic';
+import { checkPermission } from '../middleware/checkPermission';
 
 
 const router = Router();
@@ -14,6 +15,8 @@ const router = Router();
  *   post:
  *     summary: Create a new product with image upload
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
@@ -102,7 +105,7 @@ const router = Router();
  *         description: Error creating product
  */
 
-router.post('/create-products', upload.array('image'),authenticate,createProductItems);
+router.post('/create-products', upload.array('image'),authenticate,checkPermission("product", "canCreate"),createProductItems);
 
 /**
  * @swagger
@@ -110,6 +113,8 @@ router.post('/create-products', upload.array('image'),authenticate,createProduct
  *   get:
  *     summary: Get all products with pagination
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -181,6 +186,8 @@ router.get("/",getAllProducts);
  *   get:
  *     summary: Get product by ID
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -225,13 +232,16 @@ router.get("/",getAllProducts);
  */
 
 
-router.get("/:id",getProductById);
+router.get("/:id",authenticate,getProductById);
 /**
  * @swagger
  * /products/{id}:
  *   delete:
  *     summary: Delete a product by ID
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *    
  *     parameters:
  *       - in: path
  *         name: id
@@ -262,7 +272,7 @@ router.get("/:id",getProductById);
  *                   example: Product not found
  */
 
-router.delete("/:id",deleteProductById);
+router.delete("/:id",authenticate,deleteProductById);
 
 /**
  * @swagger
@@ -270,6 +280,8 @@ router.delete("/:id",deleteProductById);
  *   put:
  *     summary: Update a product by ID
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -348,7 +360,7 @@ router.delete("/:id",deleteProductById);
  *         description: Error updating product
  */
 
-router.put("/:id",updateProductById);
+router.put("/:id",authenticate,updateProductById);
 
 
 export default router;

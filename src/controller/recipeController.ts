@@ -6,6 +6,7 @@ import { AppDataSource } from '../config/db';
 import { User } from '../entities/user';
 import { RecipeImage } from '../entities/recipeImage';
 
+
 export const createRecipe = async (req: Request, res: Response) => {
     try {
       const decodedUser = req.user;
@@ -140,24 +141,28 @@ export const createRecipe = async (req: Request, res: Response) => {
   
   
   
-  
-  export const getRecipeById = async (req: Request, res: Response) => {
-    const { id } = req.params;
-  
-    try {
-      
-        
-  
-      
-  
-     
-    } catch (error) {
-      console.error('Error fetching recipe:', error);
-      res.status(500).json({ message: 'Error fetching recipe' });
+ export const getRecipeById = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid recipe id" });
     }
+    
+    const recipeRepo = AppDataSource.getRepository(Recipe);
+    const recipe = await recipeRepo.findOneBy({ id });
+    if (!recipe) {
+      return res.status(404).json({ message: "Recipe not found" });
+    }
+
+    return res.json(recipe);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
   }
+};
+
   export const updateRecipe = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = parseInt(req.params.id);
     const { title, description, cookingTime, servings, ingredients, steps } = req.body;
     const files = req.files as Express.Multer.File[];
   
@@ -214,7 +219,7 @@ export const createRecipe = async (req: Request, res: Response) => {
     }
   };
   export const deleteRecipe = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = parseInt(req.params.id);
   
     try {
       const recipeRepo = AppDataSource.getRepository(Recipe);

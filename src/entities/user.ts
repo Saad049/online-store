@@ -1,8 +1,9 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Review,} from "./review";
 import { Order } from "./order";
 import { ContactMessage } from "./contactMessage";
 import { Cart } from "./Cart";
+import { Role } from "./Role";
 
 
 @Entity()
@@ -31,9 +32,10 @@ export class User {
 
  @OneToMany(() => Cart, (cart) => cart.user)
   cart!: Cart;
-  
-  
+ @ManyToMany(() => Role, (role) => role.users)
+@JoinTable()
+roles!: Role[];
 }
 
 
- 
+  

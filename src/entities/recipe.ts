@@ -7,8 +7,8 @@ import { RecipeImage } from './recipeImage';
 
 @Entity()
   export class Recipe {
-    @PrimaryGeneratedColumn('uuid')
-    id!: string;
+    @PrimaryGeneratedColumn()
+    id!: number;
   
     @Column()
     title!: string;

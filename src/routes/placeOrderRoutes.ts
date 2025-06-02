@@ -1,6 +1,7 @@
 // routes/cartItemRoutes.ts
 import { Router } from 'express';
 import { placeOrder } from '../controller/placeOrderController';
+import { authenticate } from '../middleware/authentic';
 
 const router = Router();
 
@@ -50,12 +51,14 @@ const router = Router();
  *         description: Order placed successfully
  *       400:
  *         description: Card details are required for card payments
+ *       401:
+ *         description: Unauthorized (invalid or missing token)
  *       500:
  *         description: Server error
  */
 
 
 
-router.post('/items/place', placeOrder);
+router.post('/items/place',authenticate,placeOrder);
 
 export default router;

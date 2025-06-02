@@ -28,7 +28,7 @@ export class Product {
 
   @Column({ default: false })
   is_featured!: boolean;
-   @Column({ type: 'int', default: 1 })
+   @Column({ type: 'int', default: 0 })
 quantity!: number;
 
   @OneToMany(() => CartItem, (cartItem) => cartItem.product,{ cascade: true })

@@ -1,15 +1,18 @@
 import { Router } from "express";
 import { createReview } from "../controller/productReviewController";
 import { upload } from "../middleware/uploads";
+import { authenticate } from "../middleware/authentic";
 
 const router = Router();
 
 /**
  * @swagger
- * /Review:
+ * /createReview:
  *   post:
  *     summary: Create a Review
  *     tags: [Review]
+ *     security:
+ *       - bearerAuth: []
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
@@ -121,5 +124,5 @@ const router = Router();
  */
 
 
-router.post('/',upload.array('image'),createReview);
+router.post('/',upload.array('image'),authenticate,createReview);
 export default router;

@@ -1,6 +1,6 @@
 import express from "express";
 import { signup, login } from "../controller/authController"; // ✅
-import { authenticate } from "../middleware/authentic";
+
 
 const router = express.Router();
 

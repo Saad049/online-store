@@ -10,7 +10,8 @@ declare module "express-serve-static-core" {
   interface Request {
     user?: {
       userId: number;
-   
+
+      roles: string[];
     };
   }
 }
@@ -23,12 +24,13 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as {
       userId: number;
- 
+      roles: string[] | string;
     };
 
     req.user = {
       userId: decoded.userId,
-     
+    
+      roles: Array.isArray(decoded.roles) ? decoded.roles : [decoded.roles],
     };
 
     next();

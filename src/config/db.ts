@@ -3,6 +3,8 @@ import { DataSource } from 'typeorm';
 
 import  dotenv from 'dotenv';
 import { User,Product,Review,Order,OrderItem,Recipe,RecipeIngredient,RecipeStep,ContactMessage,Payment,RecipeImage,Cart,CartItem } from '../entities';
+import { Permission } from '../entities/Permissions';
+import { Role } from '../entities/Role';
 
 
 
@@ -14,9 +16,13 @@ export const AppDataSource = new DataSource({
     username: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
-    entities: [User,Product,Review,Order,OrderItem,Recipe,RecipeIngredient,RecipeStep,ContactMessage,Payment,RecipeImage,Cart,CartItem],
+    entities: [User,Product,Review,Order,OrderItem,Recipe,RecipeIngredient,RecipeStep,ContactMessage,Payment,RecipeImage,Cart,CartItem,Permission,Role],
     migrations: ["./src/migrations/*.ts"],
     synchronize: true,
+    // logging: true,
+    // logger: 'advanced-console',
+
+   
 });
 
 AppDataSource.initialize()

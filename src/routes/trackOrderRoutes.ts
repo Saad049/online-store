@@ -1,6 +1,7 @@
 // routes/cartItemRoutes.ts
 import { Router } from 'express';
 import { trackOrderById, trackOrderByTrackingNumber,} from '../controller/trackOrderById';
+import { authenticate } from '../middleware/authentic';
 
 
 
@@ -18,6 +19,8 @@ const router = Router();
  *   get:
  *     summary: Track order by Order ID 
  *     tags: [Track Orders]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: orderId
@@ -37,13 +40,15 @@ const router = Router();
  */
 
 
-router.get('/:orderId', trackOrderById);
+router.get('/:orderId',authenticate, trackOrderById);
 /**
  * @swagger
  * /trackorder/orders/track/{trackingNumber}:
  *   get:
  *     summary: Track order by Tracking Number
  *     tags: [Track Orders]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: trackingNumber
@@ -61,7 +66,7 @@ router.get('/:orderId', trackOrderById);
  */
 
 
-router.get('/orders/track/:trackingNumber',trackOrderByTrackingNumber);
+router.get('/orders/track/:trackingNumber',authenticate,trackOrderByTrackingNumber);
 
 export default router;
 
