@@ -1,20 +1,17 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../config/db';
-import { User } from '../entities/user';
+
 import { Cart } from '../entities/Cart';
-import { Product } from '../entities/product';
-import { CartItem } from '../entities/CartItems';
+import { cartItemRepo, cartRepo, productRepo, userRepository } from '../repositories';
+
 
 export const addToCart = async (req: Request, res: Response) => {
   const { userId, productId, action } = req.body;
 
   try {
-    const userRepo = AppDataSource.getRepository(User);
-    const cartRepo = AppDataSource.getRepository(Cart);
-    const productRepo = AppDataSource.getRepository(Product);
-    const cartItemRepo = AppDataSource.getRepository(CartItem);
+  
 
-    const user = await userRepo.findOneBy({ id: userId });
+    const user = await userRepository.findOneBy({ id: userId });
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     let cart = await cartRepo.findOne({

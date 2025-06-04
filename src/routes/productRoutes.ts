@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 
 import { upload } from '../middleware/uploads';
-import { createProductItems, deleteProductById, getAllProducts, getProductById, updateProductById } from '../controller/productController';
+import { createProductItems, deleteProductById, getAllProducts, getProductById, getProductBySku, updateProductById } from '../controller/productController';
 import { authenticate } from '../middleware/authentic';
 import { checkPermission } from '../middleware/checkPermission';
 
@@ -233,6 +233,49 @@ router.get("/",getAllProducts);
 
 
 router.get("/:id",authenticate,getProductById);
+
+/**
+ * @swagger
+ * /products/sku/{sku}:
+ *   get:
+ *     summary: Get a product by SKU
+ *     tags:
+ *       - Products
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: sku
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: SKU of the product to fetch
+ *         example: cs3-0234
+ *     responses:
+ *       200:
+ *         description: Product found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                 name:
+ *                   type: string
+ *                 sku:
+ *                   type: string
+ *                 price:
+ *                   type: number
+ *                 description:
+ *                   type: string
+ *       404:
+ *         description: Product not found
+ *       500:
+ *         description: Internal server error
+ */
+
+router.get("/sku/:sku",authenticate, getProductBySku);
 /**
  * @swagger
  * /products/{id}:
@@ -273,6 +316,7 @@ router.get("/:id",authenticate,getProductById);
  */
 
 router.delete("/:id",authenticate,deleteProductById);
+
 
 /**
  * @swagger

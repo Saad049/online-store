@@ -3,7 +3,6 @@ import { signup, login } from "../controller/authController"; // ✅
 
 
 const router = express.Router();
-
 /**
  * @swagger
  * tags:
@@ -29,10 +28,11 @@ const router = express.Router();
  *               - email
  *               - password
  *               - confirmPassword
+ *               - roleIds
  *             properties:
  *               name:
  *                 type: string
- *                 example: saad Rao
+ *                 example: Saad Rao
  *               email:
  *                 type: string
  *                 format: email
@@ -43,6 +43,11 @@ const router = express.Router();
  *               confirmPassword:
  *                 type: string
  *                 example: Admin123!3213
+ *               roleIds:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *                 example: [1]
  *     responses:
  *       201:
  *         description: User registered successfully
@@ -51,6 +56,7 @@ const router = express.Router();
  *       500:
  *         description: Internal server error
  */
+
 
 router.post("/signup", signup);
 /**

@@ -11,8 +11,10 @@ import reviewRoutes from "./reviewRoutes";
 
 import permissionRoutes from "./permissionRoutes";
 import roleRoutes from "./roleRoutes";
-import { assignRoleToUser } from "../controller/assginRoleToUser";
+
 import assginRoleToUserRoutes from "./assginRoleToUserRoutes";
+import userBlockRoutes from "./userBlockRoutes";
+
 
 
 
@@ -28,7 +30,9 @@ const registerRoutes = (app:Express)=>{
     app.use('/createReview',reviewRoutes)
     app.use("/permissions", permissionRoutes);  // Permissions Routes
     app.use("/roles", roleRoutes); 
-    app.use("/assignRoles",assginRoleToUserRoutes)
+    app.use("/assignRoles",assginRoleToUserRoutes);
+    
+    app.use("/api/admin", userBlockRoutes);
 
     
 };

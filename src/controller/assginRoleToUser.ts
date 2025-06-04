@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import { AppDataSource } from "../config/db";
 import { User } from "../entities/user";
 import { Role } from "../entities/Role";
+import { In } from "typeorm";
 
 export const assignRoleToUser = async (req: Request, res: Response) => {
   const { userId } = req.body;
@@ -23,10 +24,14 @@ export const assignRoleToUser = async (req: Request, res: Response) => {
     });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const role = await roleRepo.findOne({ where: { id: roleId }, relations: ['permissions'] });
-    if (!role) return res.status(404).json({ message: "Role not found" });
+   const roles = await roleRepo.find({
+  where: { id: In(roleId) },
+  relations: ["permissions"]
+});
 
-    user.roles = [role];
+    if (!roles) return res.status(404).json({ message: "Role not found" });
+
+      user.roles = roles;
     await userRepo.save(user);
 
     res.json({
@@ -35,8 +40,8 @@ export const assignRoleToUser = async (req: Request, res: Response) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: role.name,
-        permissions: role.permissions
+        roles: roles.map(role => role.name),
+        permissions: roles.flatMap(role => role.permissions),
       }
     });
   } catch (error) {

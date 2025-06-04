@@ -133,6 +133,23 @@ export const deleteProductById = async (req: Request, res: Response) => {
       res.status(500).json({ message: 'Error deleting product' });
     }
   };
+export const getProductBySku = async (req: Request, res: Response) => {
+  const { sku } = req.params;
+
+  try {
+    const productRepo = AppDataSource.getRepository(Product);
+    const product = await productRepo.findOneBy({ sku });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.json(product);
+  } catch (error) {
+    console.error("Error fetching product by SKU:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
 export const updateProductById = async (req: Request, res: Response) => {
     try {

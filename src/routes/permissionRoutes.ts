@@ -11,33 +11,6 @@ const router = Router();
 
 /**
  * @swagger
- * components:
- *   schemas:
- *     Permission:
- *       type: object
- *       required:
- *         - module
- *       properties:
- *        
- *         module:
- *           type: string
- *           example: User Management
- *         canCreate:
- *           type: boolean
- *           example: true
- *         canUpdate:
- *           type: boolean
- *           example: true
- *         canDelete:
- *           type: boolean
- *           example: false
- *         canGet:
- *           type: boolean
- *           example: true
- */
-
-/**
- * @swagger
  * /permissions/create-permissions:
  *   post:
  *     summary: Create a new permission
@@ -49,16 +22,28 @@ const router = Router();
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Permission'
+ *             type: object
+ *             properties:
+ *               module:
+ *                 type: string
+ *                 example: "User Management"
+ *               canCreate:
+ *                 type: boolean
+ *                 example: true
+ *               canUpdate:
+ *                 type: boolean
+ *                 example: false
+ *               canDelete:
+ *                 type: boolean
+ *                 example: true
+ *               canGet:
+ *                 type: boolean
+ *                 example: true
  *     responses:
  *       201:
  *         description: Permission created successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Permission'
  */
-router.post("/create-permissions", authenticate,createPermission);
+router.post("/create-permissions", authenticate, createPermission);
 
 /**
  * @swagger
@@ -71,12 +56,6 @@ router.post("/create-permissions", authenticate,createPermission);
  *     responses:
  *       200:
  *         description: List of permissions
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Permission'
  */
 router.get("/", getAllPermissions);
 
@@ -98,7 +77,7 @@ router.get("/", getAllPermissions);
  *       200:
  *         description: Permission deleted successfully
  */
-router.delete("/:id",authenticate, deletePermission);
+router.delete("/:id", authenticate, deletePermission);
 
 /**
  * @swagger
@@ -106,7 +85,7 @@ router.delete("/:id",authenticate, deletePermission);
  *   put:
  *     summary: Update a permission by ID
  *     tags: [Permissions]
- *    security:
+ *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
@@ -119,15 +98,27 @@ router.delete("/:id",authenticate, deletePermission);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Permission'
+ *             type: object
+ *             properties:
+ *               module:
+ *                 type: string
+ *                 example: "Order Management"
+ *               canCreate:
+ *                 type: boolean
+ *                 example: false
+ *               canUpdate:
+ *                 type: boolean
+ *                 example: true
+ *               canDelete:
+ *                 type: boolean
+ *                 example: false
+ *               canGet:
+ *                 type: boolean
+ *                 example: true
  *     responses:
  *       200:
  *         description: Updated permission
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Permission'
  */
-router.put("/:id", authenticate,updatePermission);
+router.put("/:id", authenticate, updatePermission);
 
 export default router;

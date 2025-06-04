@@ -76,6 +76,8 @@ router.post(
  *   get:
  *     summary: Get all recipes (with pagination)
  *     tags: [Recipes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -111,7 +113,12 @@ router.post(
  *                         description: Cook on medium heat
  *                     image: pancake.jpg
  */
-router.get('/', getAllRecipes);
+router.get(
+  '/',
+  authenticate,
+  checkPermission('recipe', 'canGet'),
+  getAllRecipes
+);
 
 /**
  * @swagger

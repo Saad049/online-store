@@ -8,7 +8,7 @@ const router = Router();
 
 /**
  * @swagger
- * /roles:
+ * /roles/role-permission:
  *   post:
  *     summary: Create a new role with permissions
  *     tags: [Roles]

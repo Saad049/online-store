@@ -48,7 +48,7 @@ export const signup = async (req: Request, res: Response): Promise<Response> => 
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
-//login code
+
 export const login = async (req: Request, res: Response): Promise<Response> => {
   try {
     const parsedData = loginSchema.safeParse(req.body);
@@ -62,6 +62,9 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
       const user = await userRepository.findOne({ where: { email }, relations: ["roles"] });
     if (!user) {
       return res.status(400).json({ message: "Invalid email" });
+    }
+    if (user.isBlocked) {
+      return res.status(403).json({ message: 'Your account has been blocked by the admin.' });
     }
 
     console.log("User Password in DB:", user.password);

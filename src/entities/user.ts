@@ -21,12 +21,16 @@ export class User {
   
   @CreateDateColumn()
   created_at!: Date;
+  @Column({default:false})
+  isBlocked!:boolean
+
 
   @OneToMany(() => Review, (review) => review.user)
   reviews!: Review[];
 
   @OneToMany(() => Order, (order) => order.user)
   orders!: Order[];
+
   @OneToMany(() => ContactMessage, (contactMessage) => contactMessage.user)
  ContactMessages!: ContactMessage[];
 

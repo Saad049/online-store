@@ -5,14 +5,6 @@ import {  In } from "typeorm";  // Import In to use for filtering multiple roles
 import { Permission } from "../entities/Permissions";
 import { permissionRepo, roleRepo } from "../repositories";
 
-
-
-// Create a new role
-
-
-
-
-
 export const createRoleWithPermissions = async (req: Request, res: Response) => {
   const { name, permissionIds } = req.body;
 
@@ -23,7 +15,7 @@ export const createRoleWithPermissions = async (req: Request, res: Response) => 
   try {
 
 
-    // Check if role already exists
+
     const existingRole = await roleRepo.findOne({ where: { name } });
     if (existingRole) {
       return res.status(400).json({ message: "Role already exists" });
@@ -36,7 +28,6 @@ export const createRoleWithPermissions = async (req: Request, res: Response) => 
       return res.status(404).json({ message: "One or more permissions not found" });
     }
 
-    // Create and save role with permissions
     const role = roleRepo.create({ name, permissions });
     await roleRepo.save(role);
 
@@ -59,6 +50,7 @@ export const getAllRolesWithPermissions = async (_: Request, res: Response) => {
     const roleRepo = AppDataSource.getRepository(Role);
     const roles = await roleRepo.find({
       relations: ["permissions"],
+      select: ['id','name','permissions']
     });
 
     const result = roles.map(role => ({
